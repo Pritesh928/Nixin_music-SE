@@ -1,0 +1,3 @@
+spring.application.name=nixin_music
+
+youtube.api.key = <your_api_key>
