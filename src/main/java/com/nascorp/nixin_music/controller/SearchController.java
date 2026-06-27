@@ -27,7 +27,7 @@ public class SearchController {
     @GetMapping("/search")
     public List<SearchResult> search(@RequestParam String q) throws Exception {
 
-        String apiKey = "AIzaSyC-YqneM0ndl0xlsPARk64B-wuoPNrHgLY";
+        String apiKey = ${YOUTUBE_API_KEY};
 
         String youtubeUrl = "https://www.googleapis.com/youtube/v3/search"
                 + "?part=snippet"
