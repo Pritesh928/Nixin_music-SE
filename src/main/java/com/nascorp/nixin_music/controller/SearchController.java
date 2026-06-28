@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nascorp.nixin_music.entity.SearchResult;
 
-@RestController
+@RestController 
 @RequestMapping("/api")
 public class SearchController {
 
@@ -36,7 +36,7 @@ public class SearchController {
         String youtubeUrl = "https://www.googleapis.com/youtube/v3/search"
                 + "?part=snippet"
                 + "&type=video"
-                + "&maxResults=10"
+                + "&maxResults=50"
                 + "&q=" + q
                 + "&key=" + apiKey;
 
