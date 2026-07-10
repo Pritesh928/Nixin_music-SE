@@ -3,13 +3,13 @@ package com.nascorp.nixin_music.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,5 +73,30 @@ public class SearchController {
         }
 
         return results;
+    }
+
+    @GetMapping("/stream")
+    public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                "yt-dlp",
+                "-f", "bestaudio",
+                "--get-url",
+                "https://www.youtube.com/watch?v=" + id
+            );
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+
+            String streamUrl = new String(process.getInputStream().readAllBytes()).trim();
+            process.waitFor();
+
+            if(streamUrl.isEmpty() || streamUrl.startsWith("Error!!")) {
+                return ResponseEntity.status(500).body("Failed to get the stream url :( ");
+            }
+
+            return ResponseEntity.ok(streamUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error : " + e.getMessage());
+        }
     }
 }
