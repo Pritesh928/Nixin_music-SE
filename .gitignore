@@ -34,4 +34,4 @@ build/
 #environment variables
 .env 
 
-src/main/resources/www.youtube.com_cookies.txt
+src/main/resources/cookies.txt
