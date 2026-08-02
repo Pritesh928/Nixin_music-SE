@@ -76,22 +76,39 @@ public class SearchController {
     }
 
     @GetMapping("/stream")
-    public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
+public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
     try {
-            ProcessBuilder pb = new ProcessBuilder(
-        "yt-dlp",
-        "-f", "bestaudio",
-        "--get-url",
-        "--no-playlist",
-        "--cookies", "/tmp/cookies.txt",
-        "--extractor-args", "youtube:player_client=web",
-        "--downloader-args", "ffmpeg:-v quiet",
-        "https://www.youtube.com/watch?v=" + id
-    );
+        java.io.File secretFile = new java.io.File("/etc/secrets/cookies.txt");
+        if (!secretFile.exists()) {
+            return ResponseEntity.status(500).body("cookies.txt not found at /etc/secrets/");
+        }
+
+        ProcessBuilder copyPb = new ProcessBuilder(
+            "cp", "/etc/secrets/cookies.txt", "/tmp/cookies.txt"
+        );
+        Process copyProcess = copyPb.start();
+        copyProcess.waitFor();
+
+        java.io.File tmpFile = new java.io.File("/tmp/cookies.txt");
+        if (!tmpFile.exists()) {
+            return ResponseEntity.status(500).body("Failed to copy cookies to /tmp/");
+        }
+
+        long fileSize = tmpFile.length();
+
+        ProcessBuilder pb = new ProcessBuilder(
+            "yt-dlp",
+            "-f", "bestaudio",
+            "--get-url",
+            "--no-playlist",
+            "--cookies", "/tmp/cookies.txt",
+            "--verbose",
+            "https://www.youtube.com/watch?v=" + id
+        );
 
         Map<String, String> env = pb.environment();
         env.put("PATH", env.get("PATH") + ":/root/.deno/bin:/usr/local/bin");
-        env.put("DENO_DIR", "/tmp/deno_cache");
+
         pb.redirectErrorStream(true);
         Process process = pb.start();
 
@@ -102,7 +119,8 @@ public class SearchController {
         int exitCode = process.waitFor();
 
         if (exitCode != 0 || output.isEmpty()) {
-            return ResponseEntity.status(500).body("yt-dlp failed: " + output);
+            return ResponseEntity.status(500)
+                .body("yt-dlp failed (cookies size: " + fileSize + " bytes): " + output);
         }
 
         String streamUrl = output.split("\n")[0].trim();
@@ -110,6 +128,6 @@ public class SearchController {
 
     } catch (Exception e) {
         return ResponseEntity.status(500).body("Error: " + e.getMessage());
-     }
     }
+}
 }
