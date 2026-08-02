@@ -75,39 +75,41 @@ public class SearchController {
     }
 
     @GetMapping("/stream")
-    public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
+public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
     try {
-        ProcessBuilder processBuilder = new ProcessBuilder(
+        ProcessBuilder copyPb = new ProcessBuilder(
+            "cp", "/etc/secrets/cookies.txt", "/tmp/cookies.txt"
+        );
+        copyPb.start().waitFor();
+
+        ProcessBuilder pb = new ProcessBuilder(
             "yt-dlp",
             "-f", "bestaudio",
             "--get-url",
             "--no-playlist",
-            "--cookies", "/etc/secrets/cookies.txt",
+            "--cookies", "/tmp/cookies.txt",
+            "--extractor-args", "youtube:player_client=android",
+            "--no-check-certificates",
             "https://www.youtube.com/watch?v=" + id
-    );
-        processBuilder.redirectErrorStream(true);
-        Process process = processBuilder.start();
+        );
+        pb.redirectErrorStream(true);
+        Process process = pb.start();
 
         String output = new String(
             process.getInputStream().readAllBytes()
         ).trim();
-        
+
         int exitCode = process.waitFor();
 
         if (exitCode != 0 || output.isEmpty()) {
-            return ResponseEntity
-                .status(500)
-                .body("yt-dlp failed: " + output);
+            return ResponseEntity.status(500).body("yt-dlp failed: " + output);
         }
 
         String streamUrl = output.split("\n")[0].trim();
-        
         return ResponseEntity.ok(streamUrl);
 
     } catch (Exception e) {
-        return ResponseEntity
-            .status(500)
-            .body("Error: " + e.getMessage());
-        }
+        return ResponseEntity.status(500).body("Error: " + e.getMessage());
+     }
     }
 }
