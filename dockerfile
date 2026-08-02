@@ -11,7 +11,7 @@ ENV PATH="$DENO_INSTALL/bin:$PATH"
 
 RUN pip3 install -U yt-dlp --break-system-packages
 
-COPY src/main/resources/cookies.txt /app/www.youtube.com_cookies.txt
+COPY src/main/resources/www.youtube.com_cookies.txt /app/www.youtube.com_cookies.txt
 
 RUN mvn clean package -DskipTests
 
