@@ -73,7 +73,7 @@ public class SearchController {
 
         return results;
     }
-    
+
     @GetMapping("/stream")
     public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
     try {
@@ -82,6 +82,8 @@ public class SearchController {
             "-f", "bestaudio",
             "--get-url",
             "--no-playlist",
+            "--extractor-args", "youtube:player_client=android",
+            "--user-agent", "Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36",
             "https://www.youtube.com/watch?v=" + id
         );
         pb.redirectErrorStream(true);
