@@ -2,6 +2,7 @@ package com.nascorp.nixin_music.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,20 +76,22 @@ public class SearchController {
     }
 
     @GetMapping("/stream")
-public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
+    public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
     try {
-        ProcessBuilder copyPb = new ProcessBuilder(
-            "cp", "/etc/secrets/cookies.txt", "/tmp/cookies.txt"
-        );
-            copyPb.start().waitFor();
-                ProcessBuilder pb = new ProcessBuilder(
-            "yt-dlp",
-            "-f", "bestaudio",
-            "--get-url",
-            "--no-playlist",
-            "--cookies", "/tmp/cookies.txt",
-            "https://www.youtube.com/watch?v=" + id
-        );
+            ProcessBuilder pb = new ProcessBuilder(
+        "yt-dlp",
+        "-f", "bestaudio",
+        "--get-url",
+        "--no-playlist",
+        "--cookies", "/tmp/cookies.txt",
+        "--extractor-args", "youtube:player_client=web",
+        "--downloader-args", "ffmpeg:-v quiet",
+        "https://www.youtube.com/watch?v=" + id
+    );
+
+        Map<String, String> env = pb.environment();
+        env.put("PATH", env.get("PATH") + ":/root/.deno/bin:/usr/local/bin");
+        env.put("DENO_DIR", "/tmp/deno_cache");
         pb.redirectErrorStream(true);
         Process process = pb.start();
 
