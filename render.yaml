@@ -1,7 +1,6 @@
 services:
   - type: web
-    name:nixin-music-searchengine
-    env:java
-    buildCommand: pip install yt-dlp && mvn clean
-    package -DskipTests
+    name: nixin-music-searchengine
+    env: java
+    buildCommand: pip install yt-dlp && mvn clean package -DskipTests
     startCommand: java -jar target/*.jar

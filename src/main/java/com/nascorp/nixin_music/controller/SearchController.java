@@ -31,8 +31,7 @@ public class SearchController {
 
     
     @GetMapping("/search")
-    public List<SearchResult> search(@RequestParam String q) throws Exception {
-
+    public List<SearchResult> search(@RequestParam String q) throws Exception{
         String youtubeUrl = "https://www.googleapis.com/youtube/v3/search"
                 + "?part=snippet"
                 + "&type=video"
@@ -74,29 +73,40 @@ public class SearchController {
 
         return results;
     }
-
+    
     @GetMapping("/stream")
     public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                "yt-dlp",
-                "-f", "bestaudio",
-                "--get-url",
-                "https://www.youtube.com/watch?v=" + id
-            );
-            processBuilder.redirectErrorStream(true);
-            Process process = processBuilder.start();
+    try {
+        ProcessBuilder pb = new ProcessBuilder(
+            "yt-dlp",
+            "-f", "bestaudio",
+            "--get-url",
+            "--no-playlist",
+            "https://www.youtube.com/watch?v=" + id
+        );
+        pb.redirectErrorStream(true);
+        Process process = pb.start();
 
-            String streamUrl = new String(process.getInputStream().readAllBytes()).trim();
-            process.waitFor();
+        String output = new String(
+            process.getInputStream().readAllBytes()
+        ).trim();
+        
+        int exitCode = process.waitFor();
 
-            if(streamUrl.isEmpty() || streamUrl.startsWith("Error!!")) {
-                return ResponseEntity.status(500).body("Failed to get the stream url :( ");
-            }
+        if (exitCode != 0 || output.isEmpty()) {
+            return ResponseEntity
+                .status(500)
+                .body("yt-dlp failed: " + output);
+        }
 
-            return ResponseEntity.ok(streamUrl);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error : " + e.getMessage());
+        String streamUrl = output.split("\n")[0].trim();
+        
+        return ResponseEntity.ok(streamUrl);
+
+    } catch (Exception e) {
+        return ResponseEntity
+            .status(500)
+            .body("Error: " + e.getMessage());
         }
     }
 }
