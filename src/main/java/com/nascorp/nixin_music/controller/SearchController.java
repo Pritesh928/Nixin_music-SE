@@ -82,7 +82,7 @@ public class SearchController {
             "-f", "bestaudio",
             "--get-url",
             "--no-playlist",
-            "--extractor-args", "youtube:player_client=android",
+            "--extractor-args", "youtube:player_client=ios",
             "--user-agent", "Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36",
             "https://www.youtube.com/watch?v=" + id
         );
