@@ -76,7 +76,7 @@ public class SearchController {
     }
 
     @GetMapping("/stream")
-public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
+    public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
     try {
         java.io.File secretFile = new java.io.File("/etc/secrets/cookies.txt");
         if (!secretFile.exists()) {
@@ -97,18 +97,19 @@ public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
         long fileSize = tmpFile.length();
 
         ProcessBuilder pb = new ProcessBuilder(
-            "yt-dlp",
-            "-f", "bestaudio",
-            "--get-url",
-            "--no-playlist",
-            "--cookies", "/tmp/cookies.txt",
-            "--verbose",
-            "https://www.youtube.com/watch?v=" + id
-        );
+        "yt-dlp",
+        "-f", "bestaudio",
+        "--get-url",
+        "--no-playlist",
+        "--cookies", "/tmp/cookies.txt",
+        "--remote-components", "ejs:github",
+        "https://www.youtube.com/watch?v=" + id
+    );
 
         Map<String, String> env = pb.environment();
         env.put("PATH", env.get("PATH") + ":/root/.deno/bin:/usr/local/bin");
-
+        env.put("DENO_DIR", "/tmp/deno_cache");
+        pb.redirectErrorStream(true);
         pb.redirectErrorStream(true);
         Process process = pb.start();
 
