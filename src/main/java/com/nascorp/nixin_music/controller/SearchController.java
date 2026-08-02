@@ -80,16 +80,13 @@ public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
         ProcessBuilder copyPb = new ProcessBuilder(
             "cp", "/etc/secrets/cookies.txt", "/tmp/cookies.txt"
         );
-        copyPb.start().waitFor();
-
-        ProcessBuilder pb = new ProcessBuilder(
+            copyPb.start().waitFor();
+                ProcessBuilder pb = new ProcessBuilder(
             "yt-dlp",
             "-f", "bestaudio",
             "--get-url",
             "--no-playlist",
             "--cookies", "/tmp/cookies.txt",
-            "--extractor-args", "youtube:player_client=android",
-            "--no-check-certificates",
             "https://www.youtube.com/watch?v=" + id
         );
         pb.redirectErrorStream(true);
