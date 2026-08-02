@@ -33,3 +33,5 @@ build/
 .vscode/
 #environment variables
 .env 
+
+src/main/resources/www.youtube.com_cookies.txt

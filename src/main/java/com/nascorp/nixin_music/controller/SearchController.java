@@ -77,17 +77,16 @@ public class SearchController {
     @GetMapping("/stream")
     public ResponseEntity<String> getStreamUrl(@RequestParam String id) {
     try {
-        ProcessBuilder pb = new ProcessBuilder(
+        ProcessBuilder processBuilder = new ProcessBuilder(
             "yt-dlp",
             "-f", "bestaudio",
             "--get-url",
             "--no-playlist",
-            "--extractor-args", "youtube:player_client=tv_embedded",
-            "--user-agent", "Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36",
+            "--cookies", "/app/cookies.txt",
             "https://www.youtube.com/watch?v=" + id
         );
-        pb.redirectErrorStream(true);
-        Process process = pb.start();
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
 
         String output = new String(
             process.getInputStream().readAllBytes()

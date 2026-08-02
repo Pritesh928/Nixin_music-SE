@@ -9,7 +9,9 @@ RUN curl -fsSL https://deno.land/install.sh | sh
 ENV DENO_INSTALL="/root/.deno"
 ENV PATH="$DENO_INSTALL/bin:$PATH"
 
-RUN pip3 install yt-dlp --break-system-packages
+RUN pip3 install -U yt-dlp --break-system-packages
+
+COPY src/main/resources/cookies.txt /app/cookies.txt
 
 RUN mvn clean package -DskipTests
 
