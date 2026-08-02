@@ -82,9 +82,9 @@ public class SearchController {
             "-f", "bestaudio",
             "--get-url",
             "--no-playlist",
-            "--cookies", "/app/cookies.txt",
+            "--cookies", "/etc/secrets/cookies.txt",
             "https://www.youtube.com/watch?v=" + id
-        );
+    );
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
 

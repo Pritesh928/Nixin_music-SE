@@ -11,8 +11,6 @@ ENV PATH="$DENO_INSTALL/bin:$PATH"
 
 RUN pip3 install -U yt-dlp --break-system-packages
 
-COPY src/main/resources/cookies.txt /app/cookies.txt
-
 RUN mvn clean package -DskipTests
 
 CMD ["java","-jar","target/nixin_music-0.0.1-SNAPSHOT.jar"]
